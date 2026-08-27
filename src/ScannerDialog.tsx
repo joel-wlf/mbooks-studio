@@ -13,23 +13,17 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
 import QuantityInput from "./QuantityInput";
 import fetchBookByIsbn, { coverUrl, normalizeIsbn } from "./openlibrary";
-import type { Book, Shelf } from "./types";
+import ShelfSelect from "./ShelfSelect";
+import type { Book, Library, Shelf } from "./types";
 
 type ScannerDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   books: Book[];
   shelfs: Shelf[];
+  libraries: Library[];
   onCreate: (book: Omit<Book, "id">) => void;
   onUpdate: (book: Book) => void;
   onDelete: (id: string) => void;
@@ -42,6 +36,7 @@ function ScannerDialog({
   onOpenChange,
   books,
   shelfs,
+  libraries,
   onCreate,
   onUpdate,
   onDelete,
@@ -276,27 +271,14 @@ function ScannerDialog({
 
                 <div className='flex flex-col gap-2'>
                   <Label>Regal</Label>
-                  <Select
-                    items={shelfs.map((shelf) => ({
-                      value: shelf.id,
-                      label: shelf.name,
-                    }))}
+                  <ShelfSelect
+                    shelfs={shelfs}
+                    libraries={libraries}
                     value={form.shelfId}
                     onValueChange={(value) =>
-                      setForm({ ...form, shelfId: String(value) })
+                      setForm({ ...form, shelfId: value })
                     }
-                  >
-                    <SelectTrigger className='w-full'>
-                      <SelectValue placeholder='Regal wählen' />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {shelfs.map((shelf) => (
-                        <SelectItem key={shelf.id} value={shelf.id}>
-                          {shelf.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  />
                 </div>
               </div>
             )}

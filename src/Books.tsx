@@ -9,17 +9,25 @@ import RowActions from "./RowActions";
 import TableToolbar from "./TableToolbar";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import type { Book, Shelf } from "./types";
+import type { Book, Library, Shelf } from "./types";
 
 type BooksProps = {
   books: Book[];
   shelfs: Shelf[];
+  libraries: Library[];
   onCreate: (book: Omit<Book, "id">) => void;
   onUpdate: (book: Book) => void;
   onDelete: (id: string) => void;
 };
 
-function Books({ books, shelfs, onCreate, onUpdate, onDelete }: BooksProps) {
+function Books({
+  books,
+  shelfs,
+  libraries,
+  onCreate,
+  onUpdate,
+  onDelete,
+}: BooksProps) {
   const [search, setSearch] = useState("");
   const [query, setQuery] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -142,6 +150,7 @@ function Books({ books, shelfs, onCreate, onUpdate, onDelete }: BooksProps) {
 
       <BookDrawer
         shelfs={shelfs}
+        libraries={libraries}
         open={drawerOpen}
         onOpenChange={setDrawerOpen}
         book={editing}

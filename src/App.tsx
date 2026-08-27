@@ -139,6 +139,7 @@ function App() {
         onOpenChange={setScannerOpen}
         books={books}
         shelfs={shelfs}
+        libraries={libraries}
         onCreate={addBook}
         onUpdate={updateBook}
         onDelete={deleteBook}
@@ -155,6 +156,7 @@ function App() {
             <Books
               books={books}
               shelfs={shelfs}
+              libraries={libraries}
               onCreate={addBook}
               onUpdate={updateBook}
               onDelete={deleteBook}

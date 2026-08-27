@@ -13,19 +13,13 @@ import {
 } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
 import fetchBookByIsbn, { coverUrl, isValidIsbn } from "./openlibrary";
-import type { Book, Shelf } from "./types";
+import ShelfSelect from "./ShelfSelect";
+import type { Book, Library, Shelf } from "./types";
 
 type BookDrawerProps = {
   shelfs: Shelf[];
+  libraries: Library[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
   //set means edit mode, null means create
@@ -47,6 +41,7 @@ type Lookup = "idle" | "loading" | "found" | "missing" | "error";
 
 function BookDrawer({
   shelfs,
+  libraries,
   open,
   onOpenChange,
   book,
@@ -266,27 +261,12 @@ function BookDrawer({
 
             <div className="flex flex-col gap-2">
               <Label>Regal</Label>
-              <Select
-                items={shelfs.map((shelf) => ({
-                  value: shelf.id,
-                  label: shelf.name,
-                }))}
+              <ShelfSelect
+                shelfs={shelfs}
+                libraries={libraries}
                 value={form.shelfId}
-                onValueChange={(value) =>
-                  setForm({ ...form, shelfId: String(value) })
-                }
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Regal wählen" />
-                </SelectTrigger>
-                <SelectContent>
-                  {shelfs.map((shelf) => (
-                    <SelectItem key={shelf.id} value={shelf.id}>
-                      {shelf.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                onValueChange={(value) => setForm({ ...form, shelfId: value })}
+              />
             </div>
           </form>
 
