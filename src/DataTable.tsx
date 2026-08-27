@@ -38,9 +38,11 @@ function DataTable<TData extends RowData>({
     data,
   });
 
+  //Table bringt schon einen eigenen scroll-container mit, die min-breite sorgt
+  //dafuer dass auf dem handy seitlich gescrollt statt gequetscht wird
   return (
-    <div className="overflow-hidden border">
-      <Table>
+    <div className="border">
+      <Table className="min-w-[46rem]">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>

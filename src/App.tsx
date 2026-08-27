@@ -8,6 +8,7 @@ import {
 
 import AppSidebar from "./AppSidebar";
 import Books from "./Books";
+import ScannerDialog from "./ScannerDialog";
 import Libraries from "./Libraries";
 import Shelves from "./Shelves";
 import demoData from "./demo-data";
@@ -15,6 +16,7 @@ import type { Book, Library, Page, Shelf } from "./types";
 
 function App() {
   const [page, setPage] = useState<Page>("books");
+  const [scannerOpen, setScannerOpen] = useState(false);
 
   const [books, setBooks] = useState<Book[]>([]);
   const [shelfs, setShelfs] = useState<Shelf[]>([]);
@@ -126,14 +128,29 @@ function App() {
 
   return (
     <SidebarProvider>
-      <AppSidebar page={page} setPage={setPage} />
+      <AppSidebar
+        page={page}
+        setPage={setPage}
+        onScannerClick={() => setScannerOpen(true)}
+      />
 
-      <SidebarInset>
+      <ScannerDialog
+        open={scannerOpen}
+        onOpenChange={setScannerOpen}
+        books={books}
+        shelfs={shelfs}
+        onCreate={addBook}
+        onUpdate={updateBook}
+        onDelete={deleteBook}
+      />
+
+      {/* min-w-0, sonst drueckt die breite tabelle das layout auseinander */}
+      <SidebarInset className='min-w-0'>
         <header className='flex h-14 items-center gap-2 border-b px-4'>
           <SidebarTrigger />
         </header>
 
-        <div className='p-6'>
+        <div className='p-4 sm:p-6'>
           {page === "books" && (
             <Books
               books={books}

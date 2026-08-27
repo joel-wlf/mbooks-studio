@@ -20,9 +20,10 @@ function TableToolbar({
   children,
 }: TableToolbarProps) {
   return (
-    <div className="flex items-center gap-2">
+    //auf dem handy nimmt die suche eine eigene zeile, der neu-button rutscht darunter
+    <div className="flex flex-wrap items-center gap-2">
       <form
-        className="flex items-center gap-2"
+        className="flex w-full min-w-0 items-center gap-2 sm:w-auto"
         onSubmit={(event) => {
           event.preventDefault();
           onSubmit();
@@ -32,7 +33,7 @@ function TableToolbar({
           value={value}
           onChange={(event) => onChange(event.target.value)}
           placeholder={placeholder}
-          className="w-64"
+          className="min-w-0 flex-1 sm:w-64 sm:flex-none"
         />
         <Button type="submit" variant="outline">
           <Search />

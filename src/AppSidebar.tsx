@@ -24,9 +24,10 @@ const items: { page: Page; title: string; icon: typeof BookOpen }[] = [
 type AppSidebarProps = {
   page: Page;
   setPage: (page: Page) => void;
+  onScannerClick: () => void;
 };
 
-function AppSidebar({ page, setPage }: AppSidebarProps) {
+function AppSidebar({ page, setPage, onScannerClick }: AppSidebarProps) {
   return (
     <Sidebar>
       <SidebarHeader className='p-4'>
@@ -62,7 +63,7 @@ function AppSidebar({ page, setPage }: AppSidebarProps) {
         </SidebarGroup>
       </SidebarContent>
 
-      <NavUser />
+      <NavUser onScannerClick={onScannerClick} />
     </Sidebar>
   );
 }

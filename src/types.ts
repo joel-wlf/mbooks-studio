@@ -9,6 +9,7 @@ export type Book = {
   author: string;
   isbn: string;
   year: number;
+  quantity: number;
 };
 
 export type Page = "books" | "shelves" | "libraries";

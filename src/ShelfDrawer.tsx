@@ -66,7 +66,7 @@ function ShelfDrawer({
 
   return (
     <Drawer swipeDirection="right" open={open} onOpenChange={onOpenChange}>
-      <DrawerContent>
+      <DrawerContent className="[--drawer-content-width:92%] sm:[--drawer-content-width:26rem]">
         <div className="flex h-full w-full flex-col">
           <DrawerHeader>
             <DrawerTitle>
@@ -79,7 +79,7 @@ function ShelfDrawer({
           </DrawerHeader>
 
           <form
-            className="flex flex-col gap-4 px-4"
+            className="flex flex-1 flex-col gap-4 overflow-y-auto px-4 pt-4"
             onSubmit={(event) => {
               event.preventDefault();
               submit();

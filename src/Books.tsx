@@ -82,6 +82,13 @@ function Books({ books, shelfs, onCreate, onUpdate, onDelete }: BooksProps) {
         ),
       },
       {
+        accessorKey: "quantity",
+        header: "Anzahl",
+        cell: ({ row }) => (
+          <span className='tabular-nums'>{row.original.quantity}</span>
+        ),
+      },
+      {
         id: "shelf",
         header: "Regal",
         cell: ({ row }) => (

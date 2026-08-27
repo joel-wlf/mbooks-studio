@@ -32,14 +32,21 @@ const user = {
   initials: "MM",
 };
 
-function NavUser() {
+type NavUserProps = {
+  onScannerClick: () => void;
+};
+
+function NavUser({ onScannerClick }: NavUserProps) {
   const { isMobile } = useSidebar();
 
   return (
     <SidebarFooter>
       <SidebarMenu>
         <SidebarMenuItem>
-          <SidebarMenuButton className='border-black border-1 mb-5 p-3 py-6 flex items-center justify-center gap-3'>
+          <SidebarMenuButton
+            onClick={onScannerClick}
+            className='border-black border-1 mb-5 p-3 py-6 flex items-center justify-center gap-3'
+          >
             <ScanBarcodeIcon className='size-6' />
             <span className='grid flex-1 text-left leading-tight'>
               <span className='text-sm font-medium'>Scanner Mode</span>
@@ -49,7 +56,7 @@ function NavUser() {
             </span>
           </SidebarMenuButton>
         </SidebarMenuItem>
-
+        
         <SidebarMenuItem>
           <DropdownMenu>
             <DropdownMenuTrigger

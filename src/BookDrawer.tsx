@@ -31,7 +31,14 @@ type BookDrawerProps = {
   onSubmit: (book: Omit<Book, "id">) => void;
 };
 
-const emptyForm = { title: "", author: "", isbn: "", year: "", shelfId: "" };
+const emptyForm = {
+  title: "",
+  author: "",
+  isbn: "",
+  year: "",
+  shelfId: "",
+  quantity: "1",
+};
 
 function BookDrawer({
   shelfs,
@@ -54,6 +61,7 @@ function BookDrawer({
             isbn: book.isbn,
             year: String(book.year),
             shelfId: book.shelfId,
+            quantity: String(book.quantity),
           }
         : emptyForm,
     );
@@ -70,6 +78,7 @@ function BookDrawer({
       isbn: form.isbn.trim(),
       year: Number(form.year) || 0,
       shelfId: form.shelfId,
+      quantity: Math.max(1, Number(form.quantity) || 1),
     });
 
     onOpenChange(false);
@@ -77,7 +86,7 @@ function BookDrawer({
 
   return (
     <Drawer swipeDirection="right" open={open} onOpenChange={onOpenChange}>
-      <DrawerContent>
+      <DrawerContent className="[--drawer-content-width:92%] sm:[--drawer-content-width:26rem]">
         <div className="flex h-full w-full flex-col">
           <DrawerHeader>
             <DrawerTitle>{book ? "Buch bearbeiten" : "Neues Buch"}</DrawerTitle>
@@ -87,7 +96,7 @@ function BookDrawer({
           </DrawerHeader>
 
           <form
-            className="flex flex-col gap-4 px-4"
+            className="flex flex-1 flex-col gap-4 overflow-y-auto px-4 pt-4"
             onSubmit={(event) => {
               event.preventDefault();
               submit();
@@ -115,8 +124,8 @@ function BookDrawer({
               />
             </div>
 
-            <div className="flex gap-4">
-              <div className="flex flex-1 flex-col gap-2">
+            <div className="flex flex-wrap gap-4">
+              <div className="flex min-w-40 flex-1 flex-col gap-2">
                 <Label htmlFor="book-isbn">ISBN</Label>
                 <Input
                   id="book-isbn"
@@ -127,7 +136,7 @@ function BookDrawer({
                 />
               </div>
 
-              <div className="flex w-32 flex-col gap-2">
+              <div className="flex w-24 flex-col gap-2 sm:w-32">
                 <Label htmlFor="book-year">Jahr</Label>
                 <Input
                   id="book-year"
@@ -135,6 +144,19 @@ function BookDrawer({
                   value={form.year}
                   onChange={(event) =>
                     setForm({ ...form, year: event.target.value })
+                  }
+                />
+              </div>
+
+              <div className="flex w-24 flex-col gap-2 sm:w-32">
+                <Label htmlFor="book-quantity">Anzahl</Label>
+                <Input
+                  id="book-quantity"
+                  type="number"
+                  min={1}
+                  value={form.quantity}
+                  onChange={(event) =>
+                    setForm({ ...form, quantity: event.target.value })
                   }
                 />
               </div>
