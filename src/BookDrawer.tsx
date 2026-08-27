@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -20,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+import fetchBookByIsbn, { coverUrl, isValidIsbn } from "./openlibrary";
 import type { Book, Shelf } from "./types";
 
 type BookDrawerProps = {
@@ -40,6 +42,9 @@ const emptyForm = {
   quantity: "1",
 };
 
+//"idle" heisst: noch nichts nachgeschlagen, dann zeigen wir keine meldung an
+type Lookup = "idle" | "loading" | "found" | "missing" | "error";
+
 function BookDrawer({
   shelfs,
   open,
@@ -48,6 +53,8 @@ function BookDrawer({
   onSubmit,
 }: BookDrawerProps) {
   const [form, setForm] = useState(emptyForm);
+  const [lookup, setLookup] = useState<Lookup>("idle");
+  const [cover, setCover] = useState<string | null>(null);
 
   //refill whenever the drawer opens, so edit starts from the current row
   useEffect(() => {
@@ -65,9 +72,45 @@ function BookDrawer({
           }
         : emptyForm,
     );
+    setLookup("idle");
+    setCover(book && isValidIsbn(book.isbn) ? coverUrl(book.isbn) : null);
   }, [open, book]);
 
-  const canSubmit = form.title.trim() !== "" && form.shelfId !== "";
+  //leere isbn bleibt erlaubt, eine ausgefuellte muss aber zur pruefziffer passen
+  const isbnEntered = form.isbn.trim() !== "";
+  const isbnValid = isValidIsbn(form.isbn);
+  const isbnBroken = isbnEntered && !isbnValid;
+
+  const canSubmit = form.title.trim() !== "" && form.shelfId !== "" && !isbnBroken;
+
+  //titel, autor und jahr aus der isbn ziehen, das regal bleibt handarbeit
+  const loadFromIsbn = async () => {
+    if (!isbnValid || lookup === "loading") return;
+
+    setLookup("loading");
+    setCover(null);
+
+    try {
+      const data = await fetchBookByIsbn(form.isbn);
+
+      if (!data) {
+        setLookup("missing");
+        return;
+      }
+
+      //nur ueberschreiben was openlibrary auch wirklich liefert
+      setForm((current) => ({
+        ...current,
+        title: data.title || current.title,
+        author: data.author || current.author,
+        year: data.year ? String(data.year) : current.year,
+      }));
+      setCover(data.cover ?? coverUrl(form.isbn));
+      setLookup("found");
+    } catch {
+      setLookup("error");
+    }
+  };
 
   const submit = () => {
     if (!canSubmit) return;
@@ -84,6 +127,21 @@ function BookDrawer({
     onOpenChange(false);
   };
 
+  const hint = isbnBroken
+    ? { text: "Prüfziffer stimmt nicht – bitte ISBN prüfen.", tone: "error" }
+    : lookup === "loading"
+      ? { text: "Wird bei OpenLibrary gesucht …", tone: "muted" }
+      : lookup === "found"
+        ? { text: "Daten von OpenLibrary übernommen.", tone: "muted" }
+        : lookup === "missing"
+          ? {
+              text: "Bei OpenLibrary nicht gefunden – bitte manuell ausfüllen.",
+              tone: "muted",
+            }
+          : lookup === "error"
+            ? { text: "OpenLibrary nicht erreichbar.", tone: "error" }
+            : null;
+
   return (
     <Drawer swipeDirection="right" open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="[--drawer-content-width:92%] sm:[--drawer-content-width:26rem]">
@@ -91,7 +149,9 @@ function BookDrawer({
           <DrawerHeader>
             <DrawerTitle>{book ? "Buch bearbeiten" : "Neues Buch"}</DrawerTitle>
             <DrawerDescription>
-              Buch {book ? "ändern" : "anlegen"} und einem Regal zuordnen.
+              {book
+                ? "Buch ändern und einem Regal zuordnen."
+                : "ISBN eingeben, Daten laden und einem Regal zuordnen."}
             </DrawerDescription>
           </DrawerHeader>
 
@@ -102,6 +162,59 @@ function BookDrawer({
               submit();
             }}
           >
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="book-isbn">ISBN</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="book-isbn"
+                  className="flex-1"
+                  placeholder="978-3-499-60555-0"
+                  value={form.isbn}
+                  onChange={(event) => {
+                    setForm({ ...form, isbn: event.target.value });
+                    setLookup("idle");
+                  }}
+                  //enter soll erst nachschlagen statt das formular abzuschicken
+                  onKeyDown={(event) => {
+                    if (event.key !== "Enter") return;
+                    event.preventDefault();
+                    void loadFromIsbn();
+                  }}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={!isbnValid || lookup === "loading"}
+                  onClick={() => void loadFromIsbn()}
+                >
+                  <Search />
+                  Daten laden
+                </Button>
+              </div>
+              {hint && (
+                <p
+                  className={
+                    hint.tone === "error"
+                      ? "text-destructive text-sm"
+                      : "text-muted-foreground text-sm"
+                  }
+                >
+                  {hint.text}
+                </p>
+              )}
+            </div>
+
+            {cover && (
+              <img
+                src={cover}
+                alt=""
+                className="h-32 w-24 rounded border object-cover"
+                onError={(event) => {
+                  event.currentTarget.style.display = "none";
+                }}
+              />
+            )}
+
             <div className="flex flex-col gap-2">
               <Label htmlFor="book-title">Titel</Label>
               <Input
@@ -125,17 +238,6 @@ function BookDrawer({
             </div>
 
             <div className="flex flex-wrap gap-4">
-              <div className="flex min-w-40 flex-1 flex-col gap-2">
-                <Label htmlFor="book-isbn">ISBN</Label>
-                <Input
-                  id="book-isbn"
-                  value={form.isbn}
-                  onChange={(event) =>
-                    setForm({ ...form, isbn: event.target.value })
-                  }
-                />
-              </div>
-
               <div className="flex w-24 flex-col gap-2 sm:w-32">
                 <Label htmlFor="book-year">Jahr</Label>
                 <Input
