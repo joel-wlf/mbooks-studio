@@ -3,6 +3,7 @@ import {
   ChevronsUpDown,
   CreditCard,
   LogOut,
+  ScanBarcodeIcon,
   Settings,
 } from "lucide-react";
 
@@ -38,43 +39,55 @@ function NavUser() {
     <SidebarFooter>
       <SidebarMenu>
         <SidebarMenuItem>
+          <SidebarMenuButton className='border-black border-1 mb-5 p-3 py-6 flex items-center justify-center gap-3'>
+            <ScanBarcodeIcon className='size-6' />
+            <span className='grid flex-1 text-left leading-tight'>
+              <span className='text-sm font-medium'>Scanner Mode</span>
+              <span className='text-muted-foreground text-xs text-wrap'>
+                Bücher via Scan managen
+              </span>
+            </span>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+
+        <SidebarMenuItem>
           <DropdownMenu>
             <DropdownMenuTrigger
               render={
-                <SidebarMenuButton size="lg" tooltip={user.name}>
-                  <Avatar className="size-8 rounded-lg">
-                    <AvatarFallback className="rounded-lg">
+                <SidebarMenuButton size='lg' tooltip={user.name}>
+                  <Avatar className='size-8 rounded-lg'>
+                    <AvatarFallback className='rounded-lg'>
                       {user.initials}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="grid flex-1 text-left leading-tight">
-                    <span className="truncate font-medium">{user.name}</span>
-                    <span className="text-muted-foreground truncate text-xs">
+                  <div className='grid flex-1 text-left leading-tight'>
+                    <span className='truncate font-medium'>{user.name}</span>
+                    <span className='text-muted-foreground truncate text-xs'>
                       {user.email}
                     </span>
                   </div>
-                  <ChevronsUpDown className="ml-auto" />
+                  <ChevronsUpDown className='ml-auto' />
                 </SidebarMenuButton>
               }
             />
 
             <DropdownMenuContent
-              className="w-(--anchor-width) min-w-56"
+              className='w-(--anchor-width) min-w-56'
               side={isMobile ? "bottom" : "right"}
-              align="end"
+              align='end'
               sideOffset={4}
             >
               <DropdownMenuGroup>
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex items-center gap-2 text-left">
-                    <Avatar className="size-8 rounded-lg">
-                      <AvatarFallback className="rounded-lg">
+                <DropdownMenuLabel className='font-normal'>
+                  <div className='flex items-center gap-2 text-left'>
+                    <Avatar className='size-8 rounded-lg'>
+                      <AvatarFallback className='rounded-lg'>
                         {user.initials}
                       </AvatarFallback>
                     </Avatar>
-                    <div className="grid flex-1 leading-tight">
-                      <span className="truncate font-medium">{user.name}</span>
-                      <span className="text-muted-foreground truncate text-xs">
+                    <div className='grid flex-1 leading-tight'>
+                      <span className='truncate font-medium'>{user.name}</span>
+                      <span className='text-muted-foreground truncate text-xs'>
                         {user.email}
                       </span>
                     </div>
